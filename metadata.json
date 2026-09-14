@@ -1,0 +1,7 @@
+{
+  "name": "SAGAR-SAFE AI",
+  "description": "Marine intelligence and decision platform powered by live Open-Meteo ocean & weather telemetry, multi-perspective safety evaluation, PFZ potential, and transparent marine analytics.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
