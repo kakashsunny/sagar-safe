@@ -228,17 +228,19 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
       id="nav-main-header"
       className="sticky top-2 sm:top-3 z-50 w-full px-2 sm:px-4 md:px-6 max-w-7xl mx-auto transition-all select-none pointer-events-auto"
     >
+      {/* TOP CAPSULE */}
       <div 
         id="navbar-top-capsule"
-        className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-2xl sm:rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-2xl shadow-black/60 relative min-h-[52px] sm:min-h-[56px]"
+        className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-2xl sm:rounded-full px-2 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-3 shadow-2xl shadow-black/60 relative min-h-[52px] sm:min-h-[56px] min-w-0"
       >
         <div className="absolute top-0 inset-x-8 sm:inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none rounded-full" />
 
-        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0">
+        {/* LEFT: Brand */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
           <Link 
             id="nav-logo-btn"
             to="/"
-            className="flex items-center gap-2 sm:gap-2.5 group focus:outline-none shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2.5 group focus:outline-none shrink-0"
             aria-label="SAGAR-SAFE AI Command Deck Home"
           >
             <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-cyan-500/30 via-blue-600/30 to-[#020b16] border border-cyan-400/40 flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:scale-105 group-hover:border-cyan-300 transition-all shrink-0">
@@ -247,8 +249,11 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
 
             <div className="flex flex-col justify-center min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-display font-black text-[10px] sm:text-sm md:text-base tracking-wider text-white uppercase whitespace-nowrap drop-shadow-sm">
+                <span className="hidden xs:inline font-display font-black text-[11px] sm:text-sm md:text-base tracking-wider text-white uppercase whitespace-nowrap drop-shadow-sm">
                   SAGAR-SAFE AI
+                </span>
+                <span className="xs:hidden font-display font-black text-[11px] tracking-wider text-white uppercase whitespace-nowrap drop-shadow-sm">
+                  SAGAR-SAFE
                 </span>
                 <span className="hidden md:inline-block bg-emerald-500/15 text-emerald-400 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.3)] tracking-wider uppercase shrink-0">
                   DECK
@@ -261,6 +266,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </Link>
         </div>
 
+        {/* CENTER: Primary nav — lg+ */}
         <nav 
           id="nav-center-capsule"
           aria-label="Command Bridge Primary Navigation"
@@ -297,7 +303,8 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </div>
         </nav>
 
-        <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-1.5">
+        {/* RIGHT: Quick Actions */}
+        <div className="flex shrink-0 items-center justify-end gap-0.5 sm:gap-1.5 ml-auto">
           
           <button
             id="btn-nav-port-selector"
@@ -476,7 +483,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                 type="button"
                 onClick={openAuthModal}
                 disabled={authLoading}
-                className={`${NAV_PILL} bg-white hover:bg-slate-100 text-slate-900 border border-white/20 px-2 sm:px-3 font-bold shadow-sm hover:scale-[1.02] disabled:opacity-60`}
+                className={`${NAV_PILL} bg-white hover:bg-slate-100 text-slate-900 border border-white/20 px-1.5 sm:px-3 font-bold shadow-sm hover:scale-[1.02] disabled:opacity-60`}
                 title="Sign in with Google to persist your preferences"
                 aria-label="Sign in with Google"
               >
@@ -530,14 +537,15 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? (
-              <X className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-300" />
+              <X className="w-4 h-4 text-cyan-300" />
             ) : (
-              <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-300" />
+              <Menu className="w-4 h-4 text-cyan-300" />
             )}
           </button>
         </div>
       </div>
 
+      {/* SUB-TELEMETRY BAR */}
       <div 
         id="sub-telemetry-bar"
         className="mt-1.5 sm:mt-2 w-full bg-[#020b16]/75 backdrop-blur-md border border-sky-500/20 rounded-2xl sm:rounded-full px-3 sm:px-4 md:px-5 py-1.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-[11px] font-mono text-slate-300 shadow-xl shadow-black/40 relative overflow-hidden"
@@ -571,6 +579,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         </div>
       </div>
 
+      {/* MOBILE DRAWER */}
       {mobileMenuOpen && (
         <div 
           id="nav-mobile-dropdown"
@@ -586,7 +595,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               id="btn-nav-mobile-listen"
               type="button"
@@ -598,7 +607,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               }`}
             >
               {isSpeaking ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-300" />}
-              <span className="truncate">{isSpeaking ? 'Stop Voice' : '🔊 Listen'}</span>
+              <span className="truncate">{isSpeaking ? 'Stop' : '🔊 Listen'}</span>
             </button>
 
             <button
@@ -679,7 +688,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span className="text-[11px]">Sign Out</span>
+                  <span className="text-[11px] hidden sm:inline">Sign Out</span>
                 </button>
               </div>
             ) : (
@@ -752,7 +761,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                 className="flex-1 py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-300" />
-                <span>HUD Settings</span>
+                <span>Settings</span>
               </button>
             )}
 
