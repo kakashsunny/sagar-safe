@@ -80,7 +80,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
   onToggleMarineLife,
   onOpenSettings
 }) => {
-  // Memoized hook strictly bound to LanguageProvider context
   const { 
     activeLanguage: currentLanguage, 
     setLanguage: contextSetLanguage, 
@@ -108,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
   const userMenuRef = useRef<HTMLDivElement>(null);
   const centerNavScrollRef = useRef<HTMLDivElement>(null);
 
-  // Allow trackpad / mouse-wheel to scroll the center nav horizontally through all items
+  // Allow trackpad / mouse-wheel to scroll the center nav horizontally
   useEffect(() => {
     const scrollEl = centerNavScrollRef.current;
     if (!scrollEl) return;
@@ -143,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     };
   }, []);
 
-  // Accessibility: Audio Voice Synthesizer Toggle for Fishermen
+  // Accessibility: Audio Voice Synthesizer Toggle
   const handleToggleGlobalAudio = () => {
     if (isSpeaking) {
       stopSpeaking();
@@ -204,6 +203,12 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     };
   }, []);
 
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
   const languages = [
     { code: 'en', label: 'English', region: 'All India' },
     { code: 'hi', label: 'हिन्दी (Hindi)', region: 'National' },
@@ -217,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     { code: 'gu', label: 'ગુજરાતી (Gujarati)', region: 'Gujarat Coast' }
   ];
 
-  // Primary Navigation Items with exact labels and concise tablet shortLabels
+  // Primary Navigation Items
   const navLinks: NavLinkItem[] = useMemo(() => [
     { to: '/', label: t.navDashboard || 'Dashboard', shortLabel: 'Dashboard', icon: LayoutDashboard, exact: true, id: 'nav-item-dashboard' },
     { to: '/map', label: t.navMap || 'Marine Map', shortLabel: 'Map', icon: Compass, id: 'nav-item-map' },
@@ -233,15 +238,23 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
       id="nav-main-header"
       className="sticky top-2 sm:top-3 z-50 w-full px-2 sm:px-4 md:px-6 max-w-7xl mx-auto transition-all select-none pointer-events-auto"
     >
-      {/* 1. TOP MAIN NAVBAR CONTAINER */}
+      {/* ============================================================
+          1. TOP MAIN NAVBAR CAPSULE
+          Breakpoint strategy (post-fix):
+          - < 1024px (phones + tablets): hamburger menu handles ALL nav.
+            Only logo + SOS + user + alerts + hamburger stay in top bar.
+          - >= 1024px (lg): center nav capsule appears (shortLabels first,
+            full labels at 2xl). Utility buttons (port, listen, lang,
+            settings) reappear alongside.
+          ============================================================ */}
       <div 
         id="navbar-top-capsule"
-        className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-2xl shadow-black/60 relative min-h-[52px] sm:min-h-[56px]"
+        className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-2xl sm:rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-2xl shadow-black/60 relative min-h-[52px] sm:min-h-[56px]"
       >
         {/* Specular Ambient Edge Glow */}
         <div className="absolute top-0 inset-x-8 sm:inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none rounded-full" />
 
-        {/* LEFT SECTION: Brand Lockup & Status Micro-Badge */}
+        {/* LEFT: Brand Lockup */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0">
           <Link 
             id="nav-logo-btn"
@@ -249,25 +262,21 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             className="flex items-center gap-2 sm:gap-2.5 group focus:outline-none shrink-0"
             aria-label="SAGAR-SAFE AI Command Deck Home"
           >
-            {/* Animated Wave Icon Badge */}
             <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-cyan-500/30 via-blue-600/30 to-[#020b16] border border-cyan-400/40 flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:scale-105 group-hover:border-cyan-300 transition-all shrink-0">
               <Waves className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-cyan-300 animate-pulse shrink-0" />
             </div>
 
-            {/* Brand Typography & Micro-Badge */}
             <div className="flex flex-col justify-center min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-display font-black text-[11px] sm:text-sm md:text-base tracking-wider text-white uppercase whitespace-nowrap drop-shadow-sm">
+                <span className="font-display font-black text-[10px] xs:text-[11px] sm:text-sm md:text-base tracking-wider text-white uppercase whitespace-nowrap drop-shadow-sm">
                   SAGAR-SAFE AI
                 </span>
                 
-                {/* Glowing Micro-Badge: COMMAND DECK - HIDDEN ON MOBILE */}
                 <span className="hidden md:inline-block bg-emerald-500/15 text-emerald-400 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.3)] tracking-wider uppercase shrink-0">
                   DECK
                 </span>
               </div>
 
-              {/* Secondary Status Subtitle */}
               <span className="hidden 2xl:inline-block text-[10px] text-cyan-300/70 font-mono tracking-tight truncate">
                 Marine Decision Intelligence
               </span>
@@ -275,11 +284,11 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </Link>
         </div>
 
-        {/* CENTER SECTION: Primary nav — scrolls horizontally when items exceed available width */}
+        {/* CENTER: Primary nav — visible from lg (1024px) up */}
         <nav 
           id="nav-center-capsule"
           aria-label="Command Bridge Primary Navigation"
-          className="hidden xl:flex flex-1 min-w-0 items-center px-1"
+          className="hidden lg:flex flex-1 min-w-0 items-center px-1"
         >
           <div
             ref={centerNavScrollRef}
@@ -312,27 +321,15 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </div>
         </nav>
 
-        {/* RIGHT SECTION: Quick Actions */}
-        {/*
-          Breakpoint strategy:
-          - Below `lg` (phones + most tablets in portrait): only safety-critical
-            controls stay in the top pill (SOS, sign-in/user, alerts) alongside
-            the hamburger. Everything else lives in the mobile drawer.
-          - `lg` and up (large tablets landscape / laptops, but still below the
-            `xl` point where the full center nav takes over): the secondary
-            utility buttons (port, news, listen, language, settings) reappear
-            since there's finally enough width for them.
-          This avoids cramming 7+ pill buttons into the ~640-1024px range,
-          which is what was causing overlap/overflow on tablets.
-        */}
+        {/* RIGHT: Quick Actions */}
         <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-1.5">
           
-          {/* 1. Port Selector Button (visible on lg+) */}
+          {/* 1. Port Selector (visible lg+) */}
           <button
             id="btn-nav-port-selector"
             type="button"
             onClick={onOpenLocationPicker}
-            className={`hidden lg:flex ${NAV_PILL} bg-slate-900/75 hover:bg-slate-800/90 border border-sky-500/30 hover:border-sky-400/60 text-cyan-200 px-2.5 sm:px-3 shadow-sm group max-w-[150px] xl:max-w-[150px] 2xl:max-w-[200px]`}
+            className={`hidden lg:flex ${NAV_PILL} bg-slate-900/75 hover:bg-slate-800/90 border border-sky-500/30 hover:border-sky-400/60 text-cyan-200 px-2.5 sm:px-3 shadow-sm group max-w-[120px] xl:max-w-[160px] 2xl:max-w-[200px]`}
             title={`Active Port: ${selectedLocation.name} (${selectedLocation.state}). Click to switch harbour/location.`}
             aria-label={`Select maritime location, currently ${selectedLocation.name}`}
           >
@@ -343,31 +340,13 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <ChevronDown className="w-3 h-3 text-cyan-400/60 shrink-0" />
           </button>
 
-          {/* 2. News Dispatch Link — only shown once the center nav isn't visible yet but there's room (lg), hidden again at xl where the center capsule takes over */}
-          <NavLink
-            id="btn-nav-news"
-            to="/news"
-            className={({ isActive }) =>
-              `hidden lg:flex xl:hidden ${NAV_PILL} px-2 sm:px-2.5 font-mono font-bold shadow-sm ${
-                isActive
-                  ? 'bg-cyan-500/25 text-cyan-200 border border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
-                  : 'bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
-              }`
-            }
-            title={t.navNews || 'Marine Intelligence News & Dispatches'}
-            aria-label={t.navNews || 'Open marine news and dispatches'}
-          >
-            <Newspaper className="w-3.5 h-3.5 shrink-0" />
-            <span className="leading-none">{t.navNews || 'Dispatches'}</span>
-          </NavLink>
-
-          {/* 3. SOS Emergency Distress Trigger (kept visible from sm+ — safety-critical, must never be buried) */}
+          {/* 2. SOS Emergency Distress Trigger — ALWAYS visible (safety-critical) */}
           {onTriggerSos && (
             <button
               id="btn-nav-sos"
               type="button"
               onClick={onTriggerSos}
-              className={`hidden sm:flex ${NAV_PILL} px-2 sm:px-2.5 font-mono font-bold shadow-sm bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]`}
+              className={`flex ${NAV_PILL} px-2 sm:px-2.5 font-mono font-bold shadow-sm bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]`}
               title={t.navSos || 'Open Maritime Emergency SOS Distress Console'}
               aria-label={t.navSos || 'Open emergency SOS distress console'}
             >
@@ -376,7 +355,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 4. Audio Voice Broadcast Toggle (visible on lg+, reachable via drawer below that) */}
+          {/* 3. Audio Voice Broadcast Toggle (visible lg+) */}
           <button
             id="btn-nav-listen"
             type="button"
@@ -397,7 +376,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <span className="hidden xl:inline leading-none">{isSpeaking ? 'Stop' : 'Listen'}</span>
           </button>
 
-          {/* 5. Language Selector Dropdown Capsule (visible on lg+, reachable via drawer below that) */}
+          {/* 4. Language Selector Dropdown (visible lg+) */}
           <div className="relative shrink-0 hidden lg:block" ref={langMenuRef}>
             <button
               id="btn-nav-language"
@@ -446,7 +425,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* 6. Google Authentication User Capsule / Sign-In Button */}
+          {/* 5. Google Auth User Capsule / Sign-In Button — always visible */}
           <div className="relative shrink-0" ref={userMenuRef}>
             {user ? (
               <div>
@@ -532,29 +511,17 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                 aria-label="Sign in with Google"
               >
                 <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
                 <span className="hidden sm:inline whitespace-nowrap">Sign In</span>
               </button>
             )}
           </div>
 
-          {/* 7. Critical Alerts Indicator Capsule */}
+          {/* 6. Critical Alerts Indicator */}
           {criticalAlertsCount > 0 && (
             <button
               id="btn-nav-alerts-badge"
@@ -571,7 +538,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 8. Settings Control Trigger (visible on lg+, reachable via drawer below that) */}
+          {/* 7. Settings Control (visible lg+) */}
           {onOpenSettings && (
             <button
               id="btn-nav-settings"
@@ -585,12 +552,12 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 9. RESPONSIVE HAMBURGER MENU TOGGLE (Visible below xl, where the center nav capsule isn't shown) */}
+          {/* 8. Hamburger Toggle — visible below lg */}
           <button
             id="btn-nav-mobile-toggle"
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden h-8 w-8 inline-flex items-center justify-center rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 transition-all focus:outline-none shrink-0"
+            className="lg:hidden h-8 w-8 inline-flex items-center justify-center rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 transition-all focus:outline-none shrink-0"
             title="Toggle Command Bridge Navigation Menu"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
@@ -605,15 +572,16 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         </div>
       </div>
 
-      {/* 2. SUB-TELEMETRY STATUS BAR (Balanced Full-Width Alignment across screen sizes) */}
+      {/* ============================================================
+          2. SUB-TELEMETRY STATUS BAR
+          ============================================================ */}
       <div 
         id="sub-telemetry-bar"
         className="mt-1.5 sm:mt-2 w-full bg-[#020b16]/75 backdrop-blur-md border border-sky-500/20 rounded-2xl sm:rounded-full px-3 sm:px-4 md:px-5 py-1.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-[11px] font-mono text-slate-300 shadow-xl shadow-black/40 relative overflow-hidden"
       >
-        {/* Specular Highlight */}
         <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent pointer-events-none" />
 
-        {/* Left Text: Command Center & Fleet Telemetry */}
+        {/* Left: Command Center */}
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <span className="text-xs shrink-0 select-none">🛰️</span>
           <span className="text-cyan-300 font-bold tracking-wider uppercase truncate text-[10px] sm:text-[11px]">
@@ -621,21 +589,18 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </span>
         </div>
 
-        {/* Right Text Status Indicators with Active Green Pulses */}
-        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3.5 shrink-0 text-[10px] sm:text-[11px]">
-          {/* ISRO Oceansat-3 Beacon */}
+        {/* Right: Status Indicators */}
+        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3.5 shrink-0 text-[10px] sm:text-[11px] flex-wrap">
           <div className="flex items-center gap-1 sm:gap-1.5 text-slate-200">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ring-2 ring-emerald-500/25 shrink-0" />
             <span className="font-semibold text-slate-200 truncate">ISRO Oceansat-3</span>
           </div>
 
-          {/* INCOIS Wave Buoys Beacon */}
           <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 text-slate-200">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ring-2 ring-emerald-500/25 shrink-0" />
             <span className="font-semibold text-slate-200 truncate">INCOIS Buoys</span>
           </div>
 
-          {/* Clean Port Badge */}
           <div 
             className="px-2 sm:px-2.5 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 font-bold text-[9px] sm:text-[10px] uppercase tracking-wider shadow-inner truncate max-w-[110px] sm:max-w-[160px]"
             title={`PORT: ${selectedLocation.name}`}
@@ -645,13 +610,15 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         </div>
       </div>
 
-      {/* 3. MOBILE & TABLET RESPONSIVE NAVIGATION DRAWER */}
+      {/* ============================================================
+          3. MOBILE & TABLET DRAWER — visible below lg
+          ============================================================ */}
       {mobileMenuOpen && (
         <div 
           id="nav-mobile-dropdown"
-          className="xl:hidden mt-2 rounded-2xl sm:rounded-3xl bg-[#020b16]/98 border border-sky-500/40 shadow-2xl p-3 sm:p-4 backdrop-blur-2xl animate-fadeIn text-slate-100 z-50 space-y-3 max-h-[calc(100vh-6rem)] overflow-y-auto"
+          className="lg:hidden mt-2 mx-auto w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-[#020b16]/98 border border-sky-500/40 shadow-2xl p-3 sm:p-4 backdrop-blur-2xl animate-fadeIn text-slate-100 z-50 space-y-3 max-h-[calc(100vh-6rem)] overflow-y-auto"
         >
-          {/* Header with status */}
+          {/* Header */}
           <div className="text-[10px] font-mono text-cyan-300/80 uppercase tracking-wider px-1 flex items-center justify-between border-b border-white/10 pb-2">
             <span className="flex items-center gap-1.5 font-bold">
               <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
@@ -662,9 +629,8 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </span>
           </div>
 
-          {/* Mobile Utility Row (Voice Broadcast + Change Port) */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Audio Voice Broadcast */}
+          {/* Utility Row: Voice + Port */}
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
             <button
               id="btn-nav-mobile-listen"
               type="button"
@@ -678,198 +644,3 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               {isSpeaking ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-300" />}
               <span className="truncate">{isSpeaking ? 'Stop Voice' : '🔊 Listen'}</span>
             </button>
-
-            {/* Port Selector */}
-            <button
-              id="btn-nav-mobile-port"
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenLocationPicker();
-              }}
-              className="p-2 sm:p-2.5 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-1.5 bg-slate-900/80 text-cyan-200 border border-sky-500/30 hover:border-sky-400 min-w-0"
-              title={`Switch from ${selectedLocation.name}`}
-            >
-              <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span className="truncate font-mono">📍 {selectedLocation.name}</span>
-            </button>
-          </div>
-
-          {/* Navigation Items Grid - Clean, Spacious, Zero Overlap */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 pt-1">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              return (
-                <NavLink
-                  key={link.to}
-                  id={`nav-mobile-${link.id}`}
-                  to={link.to}
-                  end={link.exact}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center justify-between p-2.5 rounded-xl text-xs font-semibold transition-all border ${
-                      isActive
-                        ? 'bg-cyan-500/20 text-cyan-200 border-cyan-400/50 shadow-sm font-bold'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5 border-white/5'
-                    }`
-                  }
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Icon className="w-4 h-4 text-cyan-400 shrink-0" />
-                    <span className="truncate">{link.label}</span>
-                  </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                </NavLink>
-              );
-            })}
-          </div>
-
-          {/* User Authentication in Mobile Menu */}
-          <div className="pt-2 pb-1 border-t border-white/10">
-            {user ? (
-              <div className="flex items-center justify-between p-2 rounded-xl bg-cyan-950/50 border border-cyan-400/30">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName || 'User'}
-                      className="w-8 h-8 rounded-full object-cover border border-cyan-400/50 shrink-0"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                      {user.displayName?.charAt(0) || <UserIcon className="w-4 h-4" />}
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <div className="text-xs font-bold text-white truncate">
-                      {user.displayName || 'Mariner'}
-                    </div>
-                    <div className="text-[10px] text-slate-400 truncate font-mono">
-                      {user.email}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    signOutUser();
-                  }}
-                  className="p-2 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-xs font-medium shrink-0 flex items-center gap-1"
-                  title="Sign Out"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span className="text-[11px]">Sign Out</span>
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  openAuthModal();
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-white text-slate-900 text-xs font-bold flex items-center justify-center gap-2 hover:bg-slate-100 shadow-md cursor-pointer"
-              >
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span>Continue with Google</span>
-              </button>
-            )}
-          </div>
-
-          {/* Language Selection Chips */}
-          <div className="pt-2 border-t border-white/10">
-            <div className="text-[10px] font-mono text-slate-400 mb-1.5 uppercase flex items-center gap-1">
-              <Languages className="w-3 h-3 text-cyan-400" />
-              <span>Coastal Voice Dialect</span>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  type="button"
-                  onClick={() => handleSetLanguage(lang.code)}
-                  className={`px-2 py-1 rounded-lg text-[10px] font-mono transition-all ${
-                    currentLanguage === lang.code
-                      ? 'bg-cyan-500 text-white font-bold shadow-sm'
-                      : 'bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800'
-                  }`}
-                >
-                  {lang.label.split(' ')[0]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* SOS Emergency Mobile Action */}
-          {onTriggerSos && (
-            <button
-              id="btn-nav-mobile-sos"
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onTriggerSos();
-              }}
-              className="w-full py-2.5 px-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold flex items-center justify-center gap-2 hover:bg-rose-500/30 shadow-[0_0_16px_rgba(244,63,94,0.25)]"
-              title={t.navSos || 'Open Maritime Emergency SOS Distress Console'}
-            >
-              <AlertOctagon className="w-4 h-4 text-rose-400 animate-pulse shrink-0" />
-              <span>{t.navSos || 'SOS Emergency Distress'}</span>
-            </button>
-          )}
-
-          {/* Settings & Critical Alerts Mobile Row */}
-          <div className="flex items-center gap-2 pt-1 border-t border-white/10">
-            {onOpenSettings && (
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenSettings();
-                }}
-                className="flex-1 py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10"
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-300" />
-                <span>HUD Settings</span>
-              </button>
-            )}
-
-            {criticalAlertsCount > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenAlerts();
-                }}
-                className="flex-1 py-2 px-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold flex items-center justify-center gap-2 hover:bg-rose-500/30"
-              >
-                <Bell className="w-3.5 h-3.5 text-rose-400 animate-bounce" />
-                <span>{criticalAlertsCount} Alerts</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-    </header>
-  );
-});
-
-Navbar.displayName = 'Navbar';
