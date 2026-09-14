@@ -106,6 +106,30 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
 
   const langMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const centerNavScrollRef = useRef<HTMLDivElement>(null);
+
+  // Allow trackpad / mouse-wheel to scroll the center nav horizontally through all items
+  useEffect(() => {
+    const scrollEl = centerNavScrollRef.current;
+    if (!scrollEl) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (scrollEl.scrollWidth <= scrollEl.clientWidth) return;
+
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (delta === 0) return;
+
+      const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+      const nextScroll = Math.max(0, Math.min(maxScroll, scrollEl.scrollLeft + delta));
+      if (nextScroll === scrollEl.scrollLeft) return;
+
+      scrollEl.scrollLeft = nextScroll;
+      e.preventDefault();
+    };
+
+    scrollEl.addEventListener('wheel', onWheel, { passive: false });
+    return () => scrollEl.removeEventListener('wheel', onWheel);
+  }, [location.pathname]);
 
   // Stop ongoing voice broadcast if language changes or on unmount
   useEffect(() => {
@@ -251,13 +275,17 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </Link>
         </div>
 
-        {/* CENTER SECTION: Primary nav — visible when there is room for the full capsule */}
+        {/* CENTER SECTION: Primary nav — scrolls horizontally when items exceed available width */}
         <nav 
           id="nav-center-capsule"
           aria-label="Command Bridge Primary Navigation"
-          className="hidden xl:flex items-center justify-center flex-1 min-w-0 px-1 overflow-x-auto scrollbar-none"
+          className="hidden xl:flex flex-1 min-w-0 items-center px-1"
         >
-          <div className="bg-slate-900/80 border border-slate-800/90 rounded-full p-1 flex items-center gap-0.5 2xl:gap-1 shadow-inner backdrop-blur-xl mx-auto">
+          <div
+            ref={centerNavScrollRef}
+            className="no-scrollbar w-full min-w-0 overflow-x-auto overscroll-x-contain scroll-smooth touch-pan-x [mask-image:linear-gradient(to_right,transparent,black_10px,black_calc(100%-10px),transparent)]"
+          >
+            <div className="inline-flex w-max shrink-0 items-center gap-0.5 2xl:gap-1 rounded-full border border-slate-800/90 bg-slate-900/80 p-1 shadow-inner backdrop-blur-xl">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -280,11 +308,12 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                 </NavLink>
               );
             })}
+            </div>
           </div>
         </nav>
 
         {/* RIGHT SECTION: Quick Actions */}
-        <div className="flex items-center justify-end gap-1 sm:gap-1.5 ml-auto shrink-0">
+        <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-1.5">
           
           {/* DESKTOP/TABLET UTILITY BUTTONS (Intelligently scaled by breakpoints) */}
           
