@@ -21,7 +21,9 @@ import {
   Sparkles,
   User as UserIcon,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Newspaper,
+  AlertOctagon
 } from 'lucide-react';
 
 import { MarineLocation } from '../types/marine';
@@ -294,7 +296,42 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <ChevronDown className="w-3 h-3 text-cyan-400/60 shrink-0" />
           </button>
 
-          {/* 2. Audio Voice Broadcast Toggle (visible on sm+) */}
+          {/* 2. News Dispatch Link (visible on sm+) */}
+          <NavLink
+            id="btn-nav-news"
+            to="/news"
+            className={({ isActive }) =>
+              `hidden sm:flex rounded-full px-2 sm:px-2.5 2xl:px-3 py-1.5 text-xs font-mono font-bold items-center gap-1 2xl:gap-1.5 transition-all shadow-sm focus:outline-none shrink-0 ${
+                isActive
+                  ? 'bg-cyan-500/25 text-cyan-200 border border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
+                  : 'bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+              }`
+            }
+            title={t.navNews || 'Marine Intelligence News & Dispatches'}
+            aria-label={t.navNews || 'Open marine news and dispatches'}
+          >
+            <Newspaper className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden 2xl:inline leading-none">{t.navNews || 'News'}</span>
+            <span className="inline 2xl:hidden leading-none">News</span>
+          </NavLink>
+
+          {/* 3. SOS Emergency Distress Trigger (visible on sm+) */}
+          {onTriggerSos && (
+            <button
+              id="btn-nav-sos"
+              type="button"
+              onClick={onTriggerSos}
+              className="hidden sm:flex rounded-full px-2 sm:px-2.5 2xl:px-3 py-1.5 text-xs font-mono font-bold items-center gap-1 2xl:gap-1.5 transition-all shadow-sm focus:outline-none shrink-0 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]"
+              title={t.navSos || 'Open Maritime Emergency SOS Distress Console'}
+              aria-label={t.navSos || 'Open emergency SOS distress console'}
+            >
+              <AlertOctagon className="w-3.5 h-3.5 text-rose-400 animate-pulse shrink-0" />
+              <span className="hidden 2xl:inline leading-none">{t.navSos || 'SOS'}</span>
+              <span className="inline 2xl:hidden leading-none">SOS</span>
+            </button>
+          )}
+
+          {/* 4. Audio Voice Broadcast Toggle (visible on sm+) */}
           <button
             id="btn-nav-listen"
             type="button"
@@ -316,7 +353,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <span className="inline 2xl:hidden leading-none">{isSpeaking ? 'Stop' : 'Voice'}</span>
           </button>
 
-          {/* 3. Language Selector Dropdown Capsule (compact on tablet, full on desktop) */}
+          {/* 5. Language Selector Dropdown Capsule (compact on tablet, full on desktop) */}
           <div className="relative shrink-0 hidden sm:block" ref={langMenuRef}>
             <button
               id="btn-nav-language"
@@ -365,7 +402,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* 4. Google Authentication User Capsule / Sign-In Button */}
+          {/* 6. Google Authentication User Capsule / Sign-In Button */}
           <div className="relative shrink-0" ref={userMenuRef}>
             {user ? (
               <div>
@@ -473,7 +510,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* 5. Critical Alerts Indicator Capsule */}
+          {/* 7. Critical Alerts Indicator Capsule */}
           {criticalAlertsCount > 0 && (
             <button
               id="btn-nav-alerts-badge"
@@ -490,7 +527,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 6. Settings Control Trigger */}
+          {/* 8. Settings Control Trigger */}
           {onOpenSettings && (
             <button
               id="btn-nav-settings"
@@ -504,7 +541,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 7. RESPONSIVE HAMBURGER MENU TOGGLE (Visible on xl and below) */}
+          {/* 9. RESPONSIVE HAMBURGER MENU TOGGLE (Visible on xl and below) */}
           <button
             id="btn-nav-mobile-toggle"
             type="button"
@@ -737,6 +774,23 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               ))}
             </div>
           </div>
+
+          {/* SOS Emergency Mobile Action */}
+          {onTriggerSos && (
+            <button
+              id="btn-nav-mobile-sos"
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onTriggerSos();
+              }}
+              className="w-full py-2.5 px-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold flex items-center justify-center gap-2 hover:bg-rose-500/30 shadow-[0_0_16px_rgba(244,63,94,0.25)]"
+              title={t.navSos || 'Open Maritime Emergency SOS Distress Console'}
+            >
+              <AlertOctagon className="w-4 h-4 text-rose-400 animate-pulse shrink-0" />
+              <span>{t.navSos || 'SOS Emergency Distress'}</span>
+            </button>
+          )}
 
           {/* Settings & Critical Alerts Mobile Row */}
           <div className="flex items-center gap-2 pt-1 border-t border-white/10">
