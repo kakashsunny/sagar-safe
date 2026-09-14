@@ -107,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
   const userMenuRef = useRef<HTMLDivElement>(null);
   const centerNavScrollRef = useRef<HTMLDivElement>(null);
 
-  // Allow trackpad / mouse-wheel to scroll the center nav horizontally
+  // Wheel-to-scroll for the center nav
   useEffect(() => {
     const scrollEl = centerNavScrollRef.current;
     if (!scrollEl) return;
@@ -130,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     return () => scrollEl.removeEventListener('wheel', onWheel);
   }, [location.pathname]);
 
-  // Stop ongoing voice broadcast if language changes or on unmount
+  // Stop speech on language change / unmount
   useEffect(() => {
     stopSpeaking();
     setIsSpeaking(false);
@@ -142,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     };
   }, []);
 
-  // Accessibility: Audio Voice Synthesizer Toggle
+  // Voice broadcast toggle
   const handleToggleGlobalAudio = () => {
     if (isSpeaking) {
       stopSpeaking();
@@ -180,14 +180,14 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     }
   };
 
-  // Close menus when route changes
+  // Close menus on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setLangMenuOpen(false);
     setUserMenuOpen(false);
   }, [location.pathname]);
 
-  // Close dropdown on outside click
+  // Outside-click close for dropdowns
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
@@ -203,7 +203,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     };
   }, []);
 
-  // Lock body scroll when mobile drawer is open
+  // Lock body scroll when drawer open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -222,7 +222,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     { code: 'gu', label: 'ગુજરાતી (Gujarati)', region: 'Gujarat Coast' }
   ];
 
-  // Primary Navigation Items
   const navLinks: NavLinkItem[] = useMemo(() => [
     { to: '/', label: t.navDashboard || 'Dashboard', shortLabel: 'Dashboard', icon: LayoutDashboard, exact: true, id: 'nav-item-dashboard' },
     { to: '/map', label: t.navMap || 'Marine Map', shortLabel: 'Map', icon: Compass, id: 'nav-item-map' },
@@ -238,23 +237,14 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
       id="nav-main-header"
       className="sticky top-2 sm:top-3 z-50 w-full px-2 sm:px-4 md:px-6 max-w-7xl mx-auto transition-all select-none pointer-events-auto"
     >
-      {/* ============================================================
-          1. TOP MAIN NAVBAR CAPSULE
-          Breakpoint strategy (post-fix):
-          - < 1024px (phones + tablets): hamburger menu handles ALL nav.
-            Only logo + SOS + user + alerts + hamburger stay in top bar.
-          - >= 1024px (lg): center nav capsule appears (shortLabels first,
-            full labels at 2xl). Utility buttons (port, listen, lang,
-            settings) reappear alongside.
-          ============================================================ */}
+      {/* 1. TOP MAIN NAVBAR CAPSULE */}
       <div 
         id="navbar-top-capsule"
         className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-2xl sm:rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-2xl shadow-black/60 relative min-h-[52px] sm:min-h-[56px]"
       >
-        {/* Specular Ambient Edge Glow */}
         <div className="absolute top-0 inset-x-8 sm:inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none rounded-full" />
 
-        {/* LEFT: Brand Lockup */}
+        {/* LEFT: Brand */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0">
           <Link 
             id="nav-logo-btn"
@@ -263,20 +253,18 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             aria-label="SAGAR-SAFE AI Command Deck Home"
           >
             <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-cyan-500/30 via-blue-600/30 to-[#020b16] border border-cyan-400/40 flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:scale-105 group-hover:border-cyan-300 transition-all shrink-0">
-              <Waves className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-cyan-300 animate-pulse shrink-0" />
+              <Waves className="w-4 h-4 md:w-5 md:h-5 text-cyan-300 animate-pulse shrink-0" />
             </div>
 
             <div className="flex flex-col justify-center min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-display font-black text-[10px] xs:text-[11px] sm:text-sm md:text-base tracking-wider text-white uppercase whitespace-nowrap drop-shadow-sm">
+                <span className="font-display font-black text-[10px] sm:text-sm md:text-base tracking-wider text-white uppercase whitespace-nowrap drop-shadow-sm">
                   SAGAR-SAFE AI
                 </span>
-                
                 <span className="hidden md:inline-block bg-emerald-500/15 text-emerald-400 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.3)] tracking-wider uppercase shrink-0">
                   DECK
                 </span>
               </div>
-
               <span className="hidden 2xl:inline-block text-[10px] text-cyan-300/70 font-mono tracking-tight truncate">
                 Marine Decision Intelligence
               </span>
@@ -284,7 +272,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </Link>
         </div>
 
-        {/* CENTER: Primary nav — visible from lg (1024px) up */}
+        {/* CENTER: Primary nav — visible lg+ */}
         <nav 
           id="nav-center-capsule"
           aria-label="Command Bridge Primary Navigation"
@@ -295,28 +283,28 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             className="no-scrollbar w-full min-w-0 overflow-x-auto overscroll-x-contain scroll-smooth touch-pan-x [mask-image:linear-gradient(to_right,transparent,black_10px,black_calc(100%-10px),transparent)]"
           >
             <div className="inline-flex w-max shrink-0 items-center gap-0.5 2xl:gap-1 rounded-full border border-slate-800/90 bg-slate-900/80 p-1 shadow-inner backdrop-blur-xl">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              return (
-                <NavLink
-                  key={link.to}
-                  id={link.id}
-                  to={link.to}
-                  end={link.exact}
-                  className={({ isActive }) =>
-                    `${NAV_PILL} px-2 2xl:px-3 duration-200 relative z-10 ${
-                      isActive
-                        ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.25)] font-bold'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
-                    }`
-                  }
-                >
-                  <Icon className="w-3.5 h-3.5 shrink-0" />
-                  <span className="hidden 2xl:inline leading-none">{link.label}</span>
-                  <span className="inline 2xl:hidden leading-none">{link.shortLabel}</span>
-                </NavLink>
-              );
-            })}
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <NavLink
+                    key={link.to}
+                    id={link.id}
+                    to={link.to}
+                    end={link.exact}
+                    className={({ isActive }) =>
+                      `${NAV_PILL} px-2 2xl:px-3 duration-200 relative z-10 ${
+                        isActive
+                          ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.25)] font-bold'
+                          : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
+                      }`
+                    }
+                  >
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    <span className="hidden 2xl:inline leading-none">{link.label}</span>
+                    <span className="inline 2xl:hidden leading-none">{link.shortLabel}</span>
+                  </NavLink>
+                );
+              })}
             </div>
           </div>
         </nav>
@@ -324,7 +312,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         {/* RIGHT: Quick Actions */}
         <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-1.5">
           
-          {/* 1. Port Selector (visible lg+) */}
+          {/* Port selector (lg+) */}
           <button
             id="btn-nav-port-selector"
             type="button"
@@ -340,7 +328,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <ChevronDown className="w-3 h-3 text-cyan-400/60 shrink-0" />
           </button>
 
-          {/* 2. SOS Emergency Distress Trigger — ALWAYS visible (safety-critical) */}
+          {/* SOS — always visible */}
           {onTriggerSos && (
             <button
               id="btn-nav-sos"
@@ -355,7 +343,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 3. Audio Voice Broadcast Toggle (visible lg+) */}
+          {/* Listen (lg+) */}
           <button
             id="btn-nav-listen"
             type="button"
@@ -376,7 +364,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <span className="hidden xl:inline leading-none">{isSpeaking ? 'Stop' : 'Listen'}</span>
           </button>
 
-          {/* 4. Language Selector Dropdown (visible lg+) */}
+          {/* Language selector (lg+) */}
           <div className="relative shrink-0 hidden lg:block" ref={langMenuRef}>
             <button
               id="btn-nav-language"
@@ -425,7 +413,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* 5. Google Auth User Capsule / Sign-In Button — always visible */}
+          {/* User / Sign-in */}
           <div className="relative shrink-0" ref={userMenuRef}>
             {user ? (
               <div>
@@ -521,7 +509,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* 6. Critical Alerts Indicator */}
+          {/* Alerts badge */}
           {criticalAlertsCount > 0 && (
             <button
               id="btn-nav-alerts-badge"
@@ -538,7 +526,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 7. Settings Control (visible lg+) */}
+          {/* Settings (lg+) */}
           {onOpenSettings && (
             <button
               id="btn-nav-settings"
@@ -552,7 +540,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* 8. Hamburger Toggle — visible below lg */}
+          {/* Hamburger (below lg) */}
           <button
             id="btn-nav-mobile-toggle"
             type="button"
@@ -568,20 +556,16 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-300" />
             )}
           </button>
-
         </div>
       </div>
 
-      {/* ============================================================
-          2. SUB-TELEMETRY STATUS BAR
-          ============================================================ */}
+      {/* 2. SUB-TELEMETRY BAR */}
       <div 
         id="sub-telemetry-bar"
         className="mt-1.5 sm:mt-2 w-full bg-[#020b16]/75 backdrop-blur-md border border-sky-500/20 rounded-2xl sm:rounded-full px-3 sm:px-4 md:px-5 py-1.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-[11px] font-mono text-slate-300 shadow-xl shadow-black/40 relative overflow-hidden"
       >
         <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent pointer-events-none" />
 
-        {/* Left: Command Center */}
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <span className="text-xs shrink-0 select-none">🛰️</span>
           <span className="text-cyan-300 font-bold tracking-wider uppercase truncate text-[10px] sm:text-[11px]">
@@ -589,7 +573,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </span>
         </div>
 
-        {/* Right: Status Indicators */}
         <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3.5 shrink-0 text-[10px] sm:text-[11px] flex-wrap">
           <div className="flex items-center gap-1 sm:gap-1.5 text-slate-200">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ring-2 ring-emerald-500/25 shrink-0" />
@@ -610,9 +593,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         </div>
       </div>
 
-      {/* ============================================================
-          3. MOBILE & TABLET DRAWER — visible below lg
-          ============================================================ */}
+      {/* 3. MOBILE & TABLET DRAWER (below lg) */}
       {mobileMenuOpen && (
         <div 
           id="nav-mobile-dropdown"
@@ -630,7 +611,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </div>
 
           {/* Utility Row: Voice + Port */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <button
               id="btn-nav-mobile-listen"
               type="button"
@@ -644,3 +625,185 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               {isSpeaking ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-300" />}
               <span className="truncate">{isSpeaking ? 'Stop Voice' : '🔊 Listen'}</span>
             </button>
+
+            <button
+              id="btn-nav-mobile-port"
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenLocationPicker();
+              }}
+              className="p-2 sm:p-2.5 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-1.5 bg-slate-900/80 text-cyan-200 border border-sky-500/30 hover:border-sky-400 min-w-0"
+              title={`Switch from ${selectedLocation.name}`}
+            >
+              <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="truncate font-mono">📍 {selectedLocation.name}</span>
+            </button>
+          </div>
+
+          {/* Nav items grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 pt-1">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <NavLink
+                  key={link.to}
+                  id={`nav-mobile-${link.id}`}
+                  to={link.to}
+                  end={link.exact}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center justify-between p-2.5 rounded-xl text-xs font-semibold transition-all border ${
+                      isActive
+                        ? 'bg-cyan-500/20 text-cyan-200 border-cyan-400/50 shadow-sm font-bold'
+                        : 'text-slate-300 hover:text-white hover:bg-white/5 border-white/5'
+                    }`
+                  }
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span className="truncate">{link.label}</span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                </NavLink>
+              );
+            })}
+          </div>
+
+          {/* User block */}
+          <div className="pt-2 pb-1 border-t border-white/10">
+            {user ? (
+              <div className="flex items-center justify-between p-2 rounded-xl bg-cyan-950/50 border border-cyan-400/30">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || 'User'}
+                      className="w-8 h-8 rounded-full object-cover border border-cyan-400/50 shrink-0"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                      {user.displayName?.charAt(0) || <UserIcon className="w-4 h-4" />}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-white truncate">
+                      {user.displayName || 'Mariner'}
+                    </div>
+                    <div className="text-[10px] text-slate-400 truncate font-mono">
+                      {user.email}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signOutUser();
+                  }}
+                  className="p-2 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-xs font-medium shrink-0 flex items-center gap-1"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="text-[11px]">Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openAuthModal();
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-white text-slate-900 text-xs font-bold flex items-center justify-center gap-2 hover:bg-slate-100 shadow-md cursor-pointer"
+              >
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                </svg>
+                <span>Continue with Google</span>
+              </button>
+            )}
+          </div>
+
+          {/* Language chips */}
+          <div className="pt-2 border-t border-white/10">
+            <div className="text-[10px] font-mono text-slate-400 mb-1.5 uppercase flex items-center gap-1">
+              <Languages className="w-3 h-3 text-cyan-400" />
+              <span>Coastal Voice Dialect</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => handleSetLanguage(lang.code)}
+                  className={`px-2 py-1 rounded-lg text-[10px] font-mono transition-all ${
+                    currentLanguage === lang.code
+                      ? 'bg-cyan-500 text-white font-bold shadow-sm'
+                      : 'bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  {lang.label.split(' ')[0]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* SOS */}
+          {onTriggerSos && (
+            <button
+              id="btn-nav-mobile-sos"
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onTriggerSos();
+              }}
+              className="w-full py-2.5 px-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold flex items-center justify-center gap-2 hover:bg-rose-500/30 shadow-[0_0_16px_rgba(244,63,94,0.25)]"
+              title={t.navSos || 'Open Maritime Emergency SOS Distress Console'}
+            >
+              <AlertOctagon className="w-4 h-4 text-rose-400 animate-pulse shrink-0" />
+              <span>{t.navSos || 'SOS Emergency Distress'}</span>
+            </button>
+          )}
+
+          {/* Settings + Alerts row */}
+          <div className="flex items-center gap-2 pt-1 border-t border-white/10">
+            {onOpenSettings && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenSettings();
+                }}
+                className="flex-1 py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-300" />
+                <span>HUD Settings</span>
+              </button>
+            )}
+
+            {criticalAlertsCount > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAlerts();
+                }}
+                className="flex-1 py-2 px-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold flex items-center justify-center gap-2 hover:bg-rose-500/30"
+              >
+                <Bell className="w-3.5 h-3.5 text-rose-400 animate-bounce" />
+                <span>{criticalAlertsCount} Alerts</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+});
+
+Navbar.displayName = 'Navbar';
