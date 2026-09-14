@@ -57,6 +57,14 @@ interface NavLinkItem {
   id: string;
 }
 
+const NAV_PILL =
+  'h-8 inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-all focus:outline-none shrink-0 whitespace-nowrap';
+
+const getLocationShortLabel = (name: string) => {
+  const withoutParen = name.replace(/\s*\([^)]*\)\s*$/, '').trim();
+  return withoutParen.length > 0 ? withoutParen : name;
+};
+
 export const Navbar: React.FC<NavbarProps> = React.memo(({
   selectedLocation,
   onOpenLocationPicker,
@@ -204,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
       {/* 1. TOP MAIN NAVBAR CONTAINER */}
       <div 
         id="navbar-top-capsule"
-        className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4 shadow-2xl shadow-black/60 relative min-h-[50px] sm:min-h-[56px]"
+        className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-2xl shadow-black/60 relative min-h-[52px] sm:min-h-[56px]"
       >
         {/* Specular Ambient Edge Glow */}
         <div className="absolute top-0 inset-x-8 sm:inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none rounded-full" />
@@ -243,13 +251,13 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </Link>
         </div>
 
-        {/* CENTER SECTION: Main Navigation Capsule (Rendered on Large Desktop Screens xl+ without crowding) */}
+        {/* CENTER SECTION: Primary nav — visible when there is room for the full capsule */}
         <nav 
           id="nav-center-capsule"
           aria-label="Command Bridge Primary Navigation"
-          className="hidden xl:flex items-center justify-center flex-1 min-w-0 px-1"
+          className="hidden xl:flex items-center justify-center flex-1 min-w-0 px-1 overflow-x-auto scrollbar-none"
         >
-          <div className="bg-slate-900/80 border border-slate-800/90 rounded-full p-1 flex items-center gap-0.5 2xl:gap-1 shadow-inner backdrop-blur-xl shrink-0 max-w-full overflow-hidden">
+          <div className="bg-slate-900/80 border border-slate-800/90 rounded-full p-1 flex items-center gap-0.5 2xl:gap-1 shadow-inner backdrop-blur-xl mx-auto">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -259,7 +267,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                   to={link.to}
                   end={link.exact}
                   className={({ isActive }) =>
-                    `px-2 2xl:px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 2xl:gap-1.5 transition-all duration-200 whitespace-nowrap shrink-0 relative z-10 ${
+                    `${NAV_PILL} px-2 2xl:px-3 duration-200 relative z-10 ${
                       isActive
                         ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.25)] font-bold'
                         : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
@@ -276,7 +284,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         </nav>
 
         {/* RIGHT SECTION: Quick Actions */}
-        <div className="flex items-center justify-end gap-1.5 sm:gap-2 shrink-0 min-w-0">
+        <div className="flex items-center justify-end gap-1 sm:gap-1.5 ml-auto shrink-0">
           
           {/* DESKTOP/TABLET UTILITY BUTTONS (Intelligently scaled by breakpoints) */}
           
@@ -285,23 +293,23 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             id="btn-nav-port-selector"
             type="button"
             onClick={onOpenLocationPicker}
-            className="hidden md:flex bg-slate-900/75 hover:bg-slate-800/90 border border-sky-500/30 hover:border-sky-400/60 text-cyan-200 text-xs rounded-full px-2.5 sm:px-3 py-1.5 items-center gap-1.5 shadow-sm transition-all group focus:outline-none shrink-0 max-w-[120px] lg:max-w-[150px] 2xl:max-w-[180px]"
+            className={`hidden md:flex ${NAV_PILL} bg-slate-900/75 hover:bg-slate-800/90 border border-sky-500/30 hover:border-sky-400/60 text-cyan-200 px-2.5 sm:px-3 shadow-sm group max-w-[140px] lg:max-w-[170px] xl:max-w-[150px] 2xl:max-w-[200px]`}
             title={`Active Port: ${selectedLocation.name} (${selectedLocation.state}). Click to switch harbour/location.`}
             aria-label={`Select maritime location, currently ${selectedLocation.name}`}
           >
             <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
-            <span className="truncate font-mono text-[11px] sm:text-xs text-cyan-100 font-medium">
-              {selectedLocation.name}
+            <span className="truncate font-mono text-[11px] sm:text-xs text-cyan-100 font-medium min-w-0">
+              {getLocationShortLabel(selectedLocation.name)}
             </span>
             <ChevronDown className="w-3 h-3 text-cyan-400/60 shrink-0" />
           </button>
 
-          {/* 2. News Dispatch Link (visible on sm+) */}
+          {/* 2. News Dispatch Link — hidden on xl+ where it lives in the center nav capsule */}
           <NavLink
             id="btn-nav-news"
             to="/news"
             className={({ isActive }) =>
-              `hidden sm:flex rounded-full px-2 sm:px-2.5 2xl:px-3 py-1.5 text-xs font-mono font-bold items-center gap-1 2xl:gap-1.5 transition-all shadow-sm focus:outline-none shrink-0 ${
+              `hidden sm:flex xl:hidden ${NAV_PILL} px-2 sm:px-2.5 font-mono font-bold shadow-sm ${
                 isActive
                   ? 'bg-cyan-500/25 text-cyan-200 border border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
                   : 'bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
@@ -311,8 +319,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             aria-label={t.navNews || 'Open marine news and dispatches'}
           >
             <Newspaper className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden 2xl:inline leading-none">{t.navNews || 'News'}</span>
-            <span className="inline 2xl:hidden leading-none">News</span>
+            <span className="leading-none">{t.navNews || 'Dispatches'}</span>
           </NavLink>
 
           {/* 3. SOS Emergency Distress Trigger (visible on sm+) */}
@@ -321,13 +328,12 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               id="btn-nav-sos"
               type="button"
               onClick={onTriggerSos}
-              className="hidden sm:flex rounded-full px-2 sm:px-2.5 2xl:px-3 py-1.5 text-xs font-mono font-bold items-center gap-1 2xl:gap-1.5 transition-all shadow-sm focus:outline-none shrink-0 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]"
+              className={`hidden sm:flex ${NAV_PILL} px-2 sm:px-2.5 font-mono font-bold shadow-sm bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]`}
               title={t.navSos || 'Open Maritime Emergency SOS Distress Console'}
               aria-label={t.navSos || 'Open emergency SOS distress console'}
             >
               <AlertOctagon className="w-3.5 h-3.5 text-rose-400 animate-pulse shrink-0" />
-              <span className="hidden 2xl:inline leading-none">{t.navSos || 'SOS'}</span>
-              <span className="inline 2xl:hidden leading-none">SOS</span>
+              <span className="hidden lg:inline leading-none">SOS</span>
             </button>
           )}
 
@@ -336,7 +342,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             id="btn-nav-listen"
             type="button"
             onClick={handleToggleGlobalAudio}
-            className={`hidden sm:flex rounded-full px-2 sm:px-2.5 2xl:px-3 py-1.5 text-xs font-mono font-bold items-center gap-1 2xl:gap-1.5 transition-all shadow-sm focus:outline-none shrink-0 ${
+            className={`hidden sm:flex ${NAV_PILL} px-2 sm:px-2.5 font-mono font-bold shadow-sm ${
               isSpeaking
                 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.3)] animate-pulse'
                 : 'bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
@@ -349,8 +355,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             ) : (
               <Volume2 className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
             )}
-            <span className="hidden 2xl:inline leading-none">{isSpeaking ? 'Stop' : '🔊 Listen'}</span>
-            <span className="inline 2xl:hidden leading-none">{isSpeaking ? 'Stop' : 'Voice'}</span>
+            <span className="hidden lg:inline leading-none">{isSpeaking ? 'Stop' : 'Listen'}</span>
           </button>
 
           {/* 5. Language Selector Dropdown Capsule (compact on tablet, full on desktop) */}
@@ -359,14 +364,14 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               id="btn-nav-language"
               type="button"
               onClick={() => setLangMenuOpen(!langMenuOpen)}
-              className="bg-slate-900/60 hover:bg-slate-800/80 border border-white/15 text-slate-300 hover:text-white rounded-full px-2 sm:px-2.5 py-1.5 text-xs font-mono font-bold flex items-center gap-1 transition-all focus:outline-none"
+              className={`${NAV_PILL} bg-slate-900/60 hover:bg-slate-800/80 border border-white/15 text-slate-300 hover:text-white px-2 sm:px-2.5 font-mono font-bold`}
               title="Select Maritime Language"
               aria-label="Change maritime language"
               aria-expanded={langMenuOpen}
             >
               <Languages className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
-              <span className="text-[11px] uppercase">
-                {languages.find(l => l.code === currentLanguage)?.label.split(' ')[0] || currentLanguage.toUpperCase()}
+              <span className="text-[11px] uppercase tracking-wide">
+                {currentLanguage.toUpperCase()}
               </span>
               <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${langMenuOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -410,7 +415,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                   id="btn-nav-user-profile"
                   type="button"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-1.5 p-1 sm:pr-2.5 rounded-full bg-cyan-950/70 hover:bg-cyan-900/70 border border-cyan-400/40 text-xs text-white transition-all focus:outline-none shadow-sm cursor-pointer shrink-0"
+                  className={`${NAV_PILL} p-1 sm:pr-2.5 bg-cyan-950/70 hover:bg-cyan-900/70 border border-cyan-400/40 text-white shadow-sm cursor-pointer`}
                   title={`Logged in as ${user.displayName || user.email}`}
                   aria-label="User profile menu"
                   aria-expanded={userMenuOpen}
@@ -483,7 +488,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
                 type="button"
                 onClick={openAuthModal}
                 disabled={authLoading}
-                className="bg-white hover:bg-slate-100 text-slate-900 border border-white/20 text-xs rounded-full px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 font-bold shadow-sm transition-all focus:outline-none hover:scale-[1.02] shrink-0"
+                className={`${NAV_PILL} bg-white hover:bg-slate-100 text-slate-900 border border-white/20 px-2.5 sm:px-3 font-bold shadow-sm hover:scale-[1.02] disabled:opacity-60`}
                 title="Sign in with Google to persist your preferences"
                 aria-label="Sign in with Google"
               >
@@ -516,7 +521,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               id="btn-nav-alerts-badge"
               type="button"
               onClick={onOpenAlerts}
-              className="relative p-1.5 sm:p-2 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 hover:bg-rose-500/30 transition-all focus:outline-none shrink-0"
+              className="relative h-8 w-8 inline-flex items-center justify-center rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 hover:bg-rose-500/30 transition-all focus:outline-none shrink-0"
               title={`${criticalAlertsCount} critical maritime alerts active`}
               aria-label="Open critical maritime alerts"
             >
@@ -533,7 +538,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
               id="btn-nav-settings"
               type="button"
               onClick={onOpenSettings}
-              className="hidden sm:flex p-1.5 sm:p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-cyan-200 transition-all focus:outline-none shrink-0"
+              className="hidden sm:inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-cyan-200 transition-all focus:outline-none shrink-0"
               title="Open Maritime HUD Settings & Controls"
               aria-label="Open settings"
             >
@@ -546,7 +551,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             id="btn-nav-mobile-toggle"
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-1.5 sm:p-2 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 transition-all focus:outline-none shrink-0 ml-0.5"
+            className="xl:hidden h-8 w-8 inline-flex items-center justify-center rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 transition-all focus:outline-none shrink-0"
             title="Toggle Command Bridge Navigation Menu"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
