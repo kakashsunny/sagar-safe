@@ -22,7 +22,6 @@ import {
   User as UserIcon,
   LogOut,
   ChevronRight,
-  Newspaper,
   AlertOctagon
 } from 'lucide-react';
 
@@ -83,9 +82,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
   const { 
     activeLanguage: currentLanguage, 
     setLanguage: contextSetLanguage, 
-    t, 
-    pageI18n, 
-    supportedLanguages 
+    t 
   } = useNavbarI18n(propLanguage);
 
   const handleSetLanguage = (code: string) => {
@@ -107,7 +104,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
   const userMenuRef = useRef<HTMLDivElement>(null);
   const centerNavScrollRef = useRef<HTMLDivElement>(null);
 
-  // Wheel-to-scroll for the center nav
   useEffect(() => {
     const scrollEl = centerNavScrollRef.current;
     if (!scrollEl) return;
@@ -130,7 +126,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     return () => scrollEl.removeEventListener('wheel', onWheel);
   }, [location.pathname]);
 
-  // Stop speech on language change / unmount
   useEffect(() => {
     stopSpeaking();
     setIsSpeaking(false);
@@ -142,7 +137,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     };
   }, []);
 
-  // Voice broadcast toggle
   const handleToggleGlobalAudio = () => {
     if (isSpeaking) {
       stopSpeaking();
@@ -180,14 +174,12 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     }
   };
 
-  // Close menus on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setLangMenuOpen(false);
     setUserMenuOpen(false);
   }, [location.pathname]);
 
-  // Outside-click close for dropdowns
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
@@ -203,7 +195,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
     };
   }, []);
 
-  // Lock body scroll when drawer open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -237,14 +228,12 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
       id="nav-main-header"
       className="sticky top-2 sm:top-3 z-50 w-full px-2 sm:px-4 md:px-6 max-w-7xl mx-auto transition-all select-none pointer-events-auto"
     >
-      {/* 1. TOP MAIN NAVBAR CAPSULE */}
       <div 
         id="navbar-top-capsule"
         className="w-full bg-[#020b16]/85 backdrop-blur-xl border border-sky-500/25 rounded-2xl sm:rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-2xl shadow-black/60 relative min-h-[52px] sm:min-h-[56px]"
       >
         <div className="absolute top-0 inset-x-8 sm:inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none rounded-full" />
 
-        {/* LEFT: Brand */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0">
           <Link 
             id="nav-logo-btn"
@@ -272,7 +261,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </Link>
         </div>
 
-        {/* CENTER: Primary nav — visible lg+ */}
         <nav 
           id="nav-center-capsule"
           aria-label="Command Bridge Primary Navigation"
@@ -309,10 +297,8 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
           </div>
         </nav>
 
-        {/* RIGHT: Quick Actions */}
         <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-1.5">
           
-          {/* Port selector (lg+) */}
           <button
             id="btn-nav-port-selector"
             type="button"
@@ -328,7 +314,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <ChevronDown className="w-3 h-3 text-cyan-400/60 shrink-0" />
           </button>
 
-          {/* SOS — always visible */}
           {onTriggerSos && (
             <button
               id="btn-nav-sos"
@@ -343,7 +328,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* Listen (lg+) */}
           <button
             id="btn-nav-listen"
             type="button"
@@ -364,7 +348,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <span className="hidden xl:inline leading-none">{isSpeaking ? 'Stop' : 'Listen'}</span>
           </button>
 
-          {/* Language selector (lg+) */}
           <div className="relative shrink-0 hidden lg:block" ref={langMenuRef}>
             <button
               id="btn-nav-language"
@@ -413,7 +396,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* User / Sign-in */}
           <div className="relative shrink-0" ref={userMenuRef}>
             {user ? (
               <div>
@@ -509,7 +491,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* Alerts badge */}
           {criticalAlertsCount > 0 && (
             <button
               id="btn-nav-alerts-badge"
@@ -526,7 +507,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* Settings (lg+) */}
           {onOpenSettings && (
             <button
               id="btn-nav-settings"
@@ -540,7 +520,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* Hamburger (below lg) */}
           <button
             id="btn-nav-mobile-toggle"
             type="button"
@@ -559,7 +538,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         </div>
       </div>
 
-      {/* 2. SUB-TELEMETRY BAR */}
       <div 
         id="sub-telemetry-bar"
         className="mt-1.5 sm:mt-2 w-full bg-[#020b16]/75 backdrop-blur-md border border-sky-500/20 rounded-2xl sm:rounded-full px-3 sm:px-4 md:px-5 py-1.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-[11px] font-mono text-slate-300 shadow-xl shadow-black/40 relative overflow-hidden"
@@ -579,7 +557,7 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             <span className="font-semibold text-slate-200 truncate">ISRO Oceansat-3</span>
           </div>
 
-          <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 text-slate-200">
+          <div className="hidden sm:flex items-center gap-1 sm:gap-1.5 text-slate-200">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ring-2 ring-emerald-500/25 shrink-0" />
             <span className="font-semibold text-slate-200 truncate">INCOIS Buoys</span>
           </div>
@@ -593,13 +571,11 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
         </div>
       </div>
 
-      {/* 3. MOBILE & TABLET DRAWER (below lg) */}
       {mobileMenuOpen && (
         <div 
           id="nav-mobile-dropdown"
           className="lg:hidden mt-2 mx-auto w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-[#020b16]/98 border border-sky-500/40 shadow-2xl p-3 sm:p-4 backdrop-blur-2xl animate-fadeIn text-slate-100 z-50 space-y-3 max-h-[calc(100vh-6rem)] overflow-y-auto"
         >
-          {/* Header */}
           <div className="text-[10px] font-mono text-cyan-300/80 uppercase tracking-wider px-1 flex items-center justify-between border-b border-white/10 pb-2">
             <span className="flex items-center gap-1.5 font-bold">
               <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
@@ -610,7 +586,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </span>
           </div>
 
-          {/* Utility Row: Voice + Port */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <button
               id="btn-nav-mobile-listen"
@@ -641,7 +616,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           </div>
 
-          {/* Nav items grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 pt-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -670,7 +644,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             })}
           </div>
 
-          {/* User block */}
           <div className="pt-2 pb-1 border-t border-white/10">
             {user ? (
               <div className="flex items-center justify-between p-2 rounded-xl bg-cyan-950/50 border border-cyan-400/30">
@@ -729,7 +702,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             )}
           </div>
 
-          {/* Language chips */}
           <div className="pt-2 border-t border-white/10">
             <div className="text-[10px] font-mono text-slate-400 mb-1.5 uppercase flex items-center gap-1">
               <Languages className="w-3 h-3 text-cyan-400" />
@@ -753,7 +725,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </div>
           </div>
 
-          {/* SOS */}
           {onTriggerSos && (
             <button
               id="btn-nav-mobile-sos"
@@ -770,7 +741,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({
             </button>
           )}
 
-          {/* Settings + Alerts row */}
           <div className="flex items-center gap-2 pt-1 border-t border-white/10">
             {onOpenSettings && (
               <button
